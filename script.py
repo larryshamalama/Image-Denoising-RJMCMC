@@ -80,7 +80,14 @@ while len(x_sample) < NUM_ITER:
 
     S, T = diff_areas[J], new_Voronoi.areas[J] # change in areas, new areas
 
-    assert np.abs(sum(S) - new_Voronoi.areas[-1]) < 1e-7 # change in areas same as area of new region
+    try:
+        assert np.abs(sum(S) - new_Voronoi.areas[-1]) < 1e-7 # change in areas same as area of new region
+    except:
+        print('Error in birth process')
+        print('S: ', S)
+        print('Expected area: ', new_Voronoi.areas[-1])
+        print('Current number of tiles (k): ', k)
+        print('Neighbors of i*: ', J)
 
     v = inverse_v(np.random.uniform(0, 1)) # ~ f(v)
     h_tilde = np.exp(1/sum(S)*(S@np.log(heights[J]))) # no worries about height = 0
@@ -137,10 +144,11 @@ while len(x_sample) < NUM_ITER:
             try:
                 assert np.abs(sum(S) - old_Voronoi.areas[delete_tile]) < 1e-7 # change in areas same as area of new region
             except Exception as e:
-                print(S)
-                print(old_Voronoi.areas)
-                print(delete_tile)
-                print(k)
+                print('Error in death process')
+                print('S: ', S)
+                print('Expected area: ', new_Voronoi.areas[-1])
+                print('Current number of tiles (k): ', k)
+                print('Neighbors of delete_tile: ', J)
 
             v = inverse_v(np.random.uniform(0, 1))
             h_tilde = np.exp(1/sum(S)*(S@np.log(heights[J]))) # no worries about height = 0
