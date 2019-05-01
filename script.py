@@ -64,9 +64,9 @@ while len(x_sample) < NUM_ITER:
     
     heights = np.random.normal(loc=(sum_yi + 0.7**2)/ni, scale=np.sqrt(0.7**2/ni))
     
-    if any(heights <= 0):
-        invalid_heights = np.argwhere(heights <= 0).reshape(-1)
-        heights[invalid_heights] = 0.1 # sketchy solution
+    # if any(heights <= 0):
+    #     invalid_heights = np.argwhere(heights <= 0).reshape(-1)
+    #     heights[invalid_heights] = 0.1 # sketchy solution
 
     new_point   = np.random.uniform(low=0, high=50, size=[1, 2])
     temp_points = np.concatenate((points, new_point.reshape(1, 2)))
