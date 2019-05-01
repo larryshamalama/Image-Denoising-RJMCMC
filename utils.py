@@ -40,7 +40,6 @@ def voronoi_finite_polygons_2d(vor, radius=None):
         end.
 
     """
-    fig = plt.figure(figsize=(10, 7))
     
     if vor.points.shape[1] != 2:
         raise ValueError("Requires 2D input")
@@ -53,7 +52,6 @@ def voronoi_finite_polygons_2d(vor, radius=None):
         radius = vor.points.ptp().max()*2
 
     # Construct a map containing all ridges for a given point
-    global all_ridges
     all_ridges = {}
     for (p1, p2), (v1, v2) in zip(vor.ridge_points, vor.ridge_vertices):
         all_ridges.setdefault(p1, []).append((p2, v1, v2))
@@ -134,17 +132,16 @@ def get_neighbors(updated_vor, i):
         y_intersects = np.intersect1d(i_vertices[:, 1], j_vertices[:, 1])
         
         same_x_coord = np.array([_i for (_i, x) in enumerate(x_intersects) if x in i_vertices])
-        same_y_coord = np.array([_j for (_j, x) in enumerate(x_intersects) if x in j_vertices])
+        same_y_coord = np.array([_j for (_j, x) in enumerate(y_intersects) if x in j_vertices])
         
-        print(same_x_coord, same_y_coord)
         if same_x_coord != []:
             vertices_in_common = np.intersect1d(same_x_coord, same_y_coord)
             
             if len(vertices_in_common) == len(same_x_coord):
-                assert len(vertices_in_common) == 2
+                #assert len(vertices_in_common) == 2
                 neighbors.append(j)
             
-    return np.array(neighbors)  
+    return np.array(neighbors)
 
 
 def add_first(array):
@@ -395,22 +392,32 @@ def f(v):
     return 5*v**4/((1+v**5)**2)
 
 
+
 class UpdatedVoronoi:
     def __init__(self, _points):
         self.points = _points
         self.vor = Voronoi(_points)
         self.regions, self.vertices = voronoi_finite_polygons_2d(self.vor)
-        self.updated_vertices = {i: restricted_vertices(self.vertices[self.regions[i]], _points[i]) for i in range(len(_points))}
-
-        for corner in [(0, 0), (0, 50), (50, 0), (50, 50)]:
-
-            region_where_corner_belongs = np.argmin([l2_norm(p, corner) for p in _points])
-            temp_vertices = self.updated_vertices[region_where_corner_belongs].copy()
-
-            self.updated_vertices[region_where_corner_belongs] = np.array(list(temp_vertices) + [corner])
+        
 
         self.areas = np.array([PolyArea(self.updated_vertices[i]) for i in range(len(_points))]) # hashable
         self.x_heights = [] # indices
         
+        coordinates = np.array([[(i + 0.5, j + 0.5) for i in range(50)] for j in range(50)])
+        coordinates = coordinates.reshape(-1, 2)
+
         for (u, v) in coordinates:
             self.x_heights.append(np.argmin(cdist(_points, [[u, v]]).reshape(-1,)))
+    
+    @property
+    def updated_vertices(self):
+        new_vertices = {i: restricted_vertices(self.vertices[self.regions[i]], self.points[i]) for i in range(len(self.points))}
+
+        for corner in [(0, 0), (0, 50), (50, 0), (50, 50)]:
+
+            region_where_corner_belongs = np.argmin([l2_norm(p, corner) for p in self.points])
+            temp_vertices = new_vertices[region_where_corner_belongs].copy()
+
+            new_vertices[region_where_corner_belongs] = np.array(list(temp_vertices) + [corner])
+            
+        return new_vertices
