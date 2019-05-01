@@ -50,7 +50,7 @@ k_sample = []
 count = 0
 death = 0
 birth = 0
-while len(x_sample) < 200:
+while len(x_sample) < NUM_ITER:
 
     if count % 100 == 0:
         print('Done sampling ', count)
