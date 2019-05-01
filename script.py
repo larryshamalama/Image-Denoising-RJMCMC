@@ -34,7 +34,7 @@ noise = np.random.normal(0, 0.7, size=(50, 50))
 noisy_image = grayscale - noise
 
 lam = 15
-k   = truncated_poisson(lam=lam, size=1)[0]
+k   = 15
 
 coordinates = np.array([[(i + 0.5, j + 0.5) for i in range(50)] for j in range(50)])
 coordinates = coordinates.reshape(-1, 2)
