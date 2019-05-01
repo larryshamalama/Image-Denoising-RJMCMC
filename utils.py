@@ -103,45 +103,33 @@ def voronoi_finite_polygons_2d(vor, radius=None):
 
 
 
-# def get_neighbors(ridge_points, i):
-#     # input is vor.ridge_points
-#     # i for ith region of interest
-#     neighbors = []
-#     for (x, y) in ridge_points:
-#         if x == i:
-#             neighbors.append(y)
-#         if y == i:
-#             neighbors.append(x)
-            
-#     return neighbors
-
-def get_neighbors(updated_vor, i):
-    assert i in updated_vor.updated_vertices.keys()
+# def get_neighbors(updated_vor, i):
+#     assert i in updated_vor.updated_vertices.keys()
     
-    i_vertices = updated_vor.updated_vertices[i]
-    neighbors  = []
+#     i_vertices = updated_vor.updated_vertices[i]
+#     neighbors  = []
     
-    for j in range(len(updated_vor.points)):
+#     for j in range(len(updated_vor.points)):
         
-        if i == j:
-            continue
+#         if i == j:
+#             continue
             
-        j_vertices = updated_vor.updated_vertices[j] # temp
+#         j_vertices = updated_vor.updated_vertices[j] # temp
         
-        x_intersects = np.intersect1d(i_vertices[:, 0], j_vertices[:, 0])
-        y_intersects = np.intersect1d(i_vertices[:, 1], j_vertices[:, 1])
+#         x_intersects = np.intersect1d(i_vertices[:, 0], j_vertices[:, 0])
+#         y_intersects = np.intersect1d(i_vertices[:, 1], j_vertices[:, 1])
         
-        same_x_coord = np.array([_i for (_i, x) in enumerate(x_intersects) if x in i_vertices])
-        same_y_coord = np.array([_j for (_j, x) in enumerate(y_intersects) if x in j_vertices])
+#         same_x_coord = np.array([_i for (_i, x) in enumerate(x_intersects) if x in i_vertices])
+#         same_y_coord = np.array([_j for (_j, x) in enumerate(y_intersects) if x in j_vertices])
         
-        if same_x_coord != []:
-            vertices_in_common = np.intersect1d(same_x_coord, same_y_coord)
+#         if same_x_coord != []:
+#             vertices_in_common = np.intersect1d(same_x_coord, same_y_coord)
             
-            if len(vertices_in_common) == len(same_x_coord):
-                #assert len(vertices_in_common) == 2
-                neighbors.append(j)
+#             if len(vertices_in_common) == len(same_x_coord):
+#                 #assert len(vertices_in_common) == 2
+#                 neighbors.append(j)
             
-    return np.array(neighbors)
+#     return np.array(neighbors)
 
 
 def add_first(array):

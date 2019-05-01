@@ -135,9 +135,12 @@ while len(x_sample) < NUM_ITER:
 
             new_Voronoi = UpdatedVoronoi(temp_points)
 
-            J = get_neighbors(old_Voronoi, delete_tile) # tile no longer exists in new_Voronoi
+            #J = get_neighbors(old_Voronoi, delete_tile) # tile no longer exists in new_Voronoi
+            
             _temp_areas = np.insert(new_Voronoi.areas, delete_tile, 0)
             diff_areas  = (_temp_areas - old_Voronoi.areas)
+
+            J = np.argwhere(diff_areas > 1e-7).reshape(-1).astype(np.int32)
 
             S, T = diff_areas[J], old_Voronoi.areas[J] # change in areas, new areas
 
