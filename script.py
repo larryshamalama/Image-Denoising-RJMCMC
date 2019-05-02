@@ -39,7 +39,7 @@ k   = 15
 coordinates = np.array([[(i + 0.5, j + 0.5) for i in range(50)] for j in range(50)])
 coordinates = coordinates.reshape(-1, 2)
 
-NUM_ITER = 2000
+NUM_ITER = 24000
 
 points  = random_tessellation_points(k)
 old_Voronoi = UpdatedVoronoi(points)
@@ -55,7 +55,7 @@ skip  = 0
 while len(x_sample) < NUM_ITER:
 
     if count % 100 == 0:
-        print('Done sampling ', count, '\n')
+        print('Done sampling ', count, ', current k = ', k)
     
     points  = random_tessellation_points(k)
     old_Voronoi = UpdatedVoronoi(points)
