@@ -82,7 +82,10 @@ while len(x_sample) < NUM_ITER:
     new_point   = np.random.uniform(low=0, high=50, size=[1, 2])
     
     temp_points = np.concatenate((points, new_point.reshape(1, 2)))
-    new_Voronoi = UpdatedVoronoi(temp_points)
+    try:
+        new_Voronoi = UpdatedVoronoi(temp_points)
+    except Exception as e:
+        print('new Voronoi not feasible with additional point')
     
     if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
         continue
