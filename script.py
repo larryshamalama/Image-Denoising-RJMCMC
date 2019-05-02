@@ -58,8 +58,8 @@ while len(x_sample) < NUM_ITER:
     if count % 100 == 0:
         print('Done sampling ', count) 
         print('current k:\t', k) 
-        print('duration:\t', np.around(time.time() - start, 2) 's')
-        print('number of skips:\t', skips)
+        print('duration:\t', np.around(time.time() - start, 2), 's')
+        print('number of skips:\t', skip)
         print('number of caught errors:\t', catch)
         print('')
         start = time.time()
