@@ -39,7 +39,7 @@ k   = 15
 coordinates = np.array([[(i + 0.5, j + 0.5) for i in range(50)] for j in range(50)])
 coordinates = coordinates.reshape(-1, 2)
 
-NUM_ITER = 20000
+NUM_ITER = 2000
 
 points  = random_tessellation_points(k)
 old_Voronoi = UpdatedVoronoi(points)
@@ -50,10 +50,12 @@ k_sample = []
 count = 0
 death = 0
 birth = 0
+skip  = 0
+
 while len(x_sample) < NUM_ITER:
 
     if count % 100 == 0:
-        print('Done sampling ', count)
+        print('Done sampling ', count, '\n')
     
     points  = random_tessellation_points(k)
     old_Voronoi = UpdatedVoronoi(points)
@@ -64,9 +66,9 @@ while len(x_sample) < NUM_ITER:
     
     heights = np.random.normal(loc=(sum_yi + 0.7**2)/ni, scale=np.sqrt(0.7**2/ni))
     
-    # if any(heights <= 0):
-    #     invalid_heights = np.argwhere(heights <= 0).reshape(-1)
-    #     heights[invalid_heights] = 0.1 # sketchy solution
+#     if any(heights <= 0):
+#         invalid_heights = np.argwhere(heights <= 0).reshape(-1)
+#         heights[invalid_heights] = 0.1 # sketchy solution
 
     new_point   = np.random.uniform(low=0, high=50, size=[1, 2])
     temp_points = np.concatenate((points, new_point.reshape(1, 2)))
@@ -79,7 +81,7 @@ while len(x_sample) < NUM_ITER:
 #    assert all(np.argwhere(diff_areas > 1e-7).reshape(-1).astype(np.int32) == np.sort(J))
 
     S, T = diff_areas[J], new_Voronoi.areas[J] # change in areas, new areas
-
+    
     try:
         assert np.abs(sum(S) - new_Voronoi.areas[-1]) < 1e-7 # change in areas same as area of new region
     except:
@@ -88,6 +90,7 @@ while len(x_sample) < NUM_ITER:
         print('Expected area: ', new_Voronoi.areas[-1])
         print('Current number of tiles (k): ', k)
         print('Neighbors of i*: ', J)
+        print('')
 
     v = inverse_v(np.random.uniform(0, 1)) # ~ f(v)
     h_tilde = np.exp(1/sum(S)*(S@np.log(heights[J]))) # no worries about height = 0
@@ -125,6 +128,9 @@ while len(x_sample) < NUM_ITER:
 
     else:
         if np.random.binomial(n=1, p=np.exp(-logR)):
+            if k == 3:
+                skip += 1
+                continue
             death += 1
             
             heights = heights[:-1] # removing h_star
@@ -152,6 +158,7 @@ while len(x_sample) < NUM_ITER:
                 print('Expected area: ', new_Voronoi.areas[-1])
                 print('Current number of tiles (k): ', k)
                 print('Neighbors of delete_tile: ', J)
+                print('')
 
             v = inverse_v(np.random.uniform(0, 1))
             h_tilde = np.exp(1/sum(S)*(S@np.log(heights[J]))) # no worries about height = 0
