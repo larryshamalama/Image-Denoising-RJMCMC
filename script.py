@@ -14,6 +14,7 @@ from scipy.spatial import ConvexHull
 
 import itertools
 import random
+import time
 
 from utils import *
 from collections import Counter
@@ -43,6 +44,13 @@ NUM_ITER = 24000
 
 points  = random_tessellation_points(k)
 old_Voronoi = UpdatedVoronoi(points)
+x_sample = []
+k_sample = []
+
+count = 0
+death = 0
+birth = 0
+skip  = 0
 
 x_sample = []
 k_sample = []
@@ -55,10 +63,15 @@ skip  = 0
 while len(x_sample) < NUM_ITER:
 
     if count % 100 == 0:
-        print('Done sampling ', count, ', current k = ', k)
+        print('Done sampling ', count, '\tcurrent k:', k, '\tduration:', np.around(time.time() - start, 2), 's')
+        start = time.time()
     
+
     points  = random_tessellation_points(k)
     old_Voronoi = UpdatedVoronoi(points)
+        
+    if np.abs(sum(old_Voronoi.areas) - 2500) > 1e-7:
+        continue
     
     counter = Counter(old_Voronoi.x_heights)
     ni = np.array([counter[r] for r in range(k)])
@@ -71,8 +84,12 @@ while len(x_sample) < NUM_ITER:
 #         heights[invalid_heights] = 0.1 # sketchy solution
 
     new_point   = np.random.uniform(low=0, high=50, size=[1, 2])
+    
     temp_points = np.concatenate((points, new_point.reshape(1, 2)))
     new_Voronoi = UpdatedVoronoi(temp_points)
+    
+    if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
+        continue
 
 #    J = get_neighbors(new_Voronoi, k) # k is last index of new voronoi, J as defined in Green (1995)
     diff_areas = (old_Voronoi.areas - new_Voronoi.areas[:-1])
@@ -90,7 +107,6 @@ while len(x_sample) < NUM_ITER:
         print('Expected area: ', new_Voronoi.areas[-1])
         print('Current number of tiles (k): ', k)
         print('Neighbors of i*: ', J)
-        print('')
 
     v = inverse_v(np.random.uniform(0, 1)) # ~ f(v)
     h_tilde = np.exp(1/sum(S)*(S@np.log(heights[J]))) # no worries about height = 0
@@ -129,12 +145,10 @@ while len(x_sample) < NUM_ITER:
     else:
         if np.random.binomial(n=1, p=np.exp(-logR)):
             
-            if k < 1:
+            if k <= 2:
                 skip += 1
                 continue
-                
             death += 1
-            
             heights = heights[:-1] # removing h_star
             
 
@@ -142,6 +156,9 @@ while len(x_sample) < NUM_ITER:
             temp_points = np.delete(points, delete_tile, axis=0)
 
             new_Voronoi = UpdatedVoronoi(temp_points)
+            
+            if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
+                continue
 
             #J = get_neighbors(old_Voronoi, delete_tile) # tile no longer exists in new_Voronoi
             
@@ -160,7 +177,6 @@ while len(x_sample) < NUM_ITER:
                 print('Expected area: ', new_Voronoi.areas[-1])
                 print('Current number of tiles (k): ', k)
                 print('Neighbors of delete_tile: ', J)
-                print('')
 
             v = inverse_v(np.random.uniform(0, 1))
             h_tilde = np.exp(1/sum(S)*(S@np.log(heights[J]))) # no worries about height = 0
