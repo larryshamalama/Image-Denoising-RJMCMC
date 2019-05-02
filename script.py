@@ -128,9 +128,14 @@ while len(x_sample) < NUM_ITER:
 
     else:
         if np.random.binomial(n=1, p=np.exp(-logR)):
-            if k == 3:
+            
+            if k == 4:
                 skip += 1
                 continue
+                
+            elif k < 4:
+                raise ValueError
+                
             death += 1
             
             heights = heights[:-1] # removing h_star
