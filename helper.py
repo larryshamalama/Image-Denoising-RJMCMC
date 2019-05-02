@@ -65,6 +65,7 @@ def PolyArea(coords):
         x, y = zip(*coords)
     except:
         print(coords)
+        raise ValueError
     
     right_indices = ConvexHull(coords).vertices
     x_temp = np.array(x)[right_indices]
