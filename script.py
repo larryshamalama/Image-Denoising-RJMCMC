@@ -70,7 +70,11 @@ while len(x_sample) < NUM_ITER:
     
 
     points  = random_tessellation_points(k)
-    old_Voronoi = UpdatedVoronoi(points)
+
+    try:
+        old_Voronoi = UpdatedVoronoi(points)
+    except Exception as e:
+        continue
         
     if np.abs(sum(old_Voronoi.areas) - 2500) > 1e-7:
         continue
@@ -157,7 +161,10 @@ while len(x_sample) < NUM_ITER:
             delete_tile = random.choice(range(len(points)))
             temp_points = np.delete(points, delete_tile, axis=0)
 
-            new_Voronoi = UpdatedVoronoi(temp_points)
+            try:
+                new_Voronoi = UpdatedVoronoi(temp_points)
+            except Exception as e:
+                continue
             
             if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
                 continue
