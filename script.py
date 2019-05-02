@@ -60,6 +60,8 @@ death = 0
 birth = 0
 skip  = 0
 
+start = time.time()
+
 while len(x_sample) < NUM_ITER:
 
     if count % 100 == 0:
