@@ -42,16 +42,6 @@ coordinates = coordinates.reshape(-1, 2)
 
 NUM_ITER = 24000
 
-points  = random_tessellation_points(k)
-old_Voronoi = UpdatedVoronoi(points)
-x_sample = []
-k_sample = []
-
-count = 0
-death = 0
-birth = 0
-skip  = 0
-
 x_sample = []
 k_sample = []
 
@@ -67,13 +57,13 @@ while len(x_sample) < NUM_ITER:
     if count % 100 == 0:
         print('Done sampling ', count, '\tcurrent k:', k, '\tduration:', np.around(time.time() - start, 2), 's')
         start = time.time()
-    
 
     points  = random_tessellation_points(k)
-
+    
     try:
         old_Voronoi = UpdatedVoronoi(points)
     except Exception as e:
+        print('old Voronoi not feasible:', e)
         continue
         
     if np.abs(sum(old_Voronoi.areas) - 2500) > 1e-7:
@@ -151,7 +141,7 @@ while len(x_sample) < NUM_ITER:
     else:
         if np.random.binomial(n=1, p=np.exp(-logR)):
             
-            if k <= 2:
+            if k <= 3:
                 skip += 1
                 continue
             death += 1
@@ -164,6 +154,7 @@ while len(x_sample) < NUM_ITER:
             try:
                 new_Voronoi = UpdatedVoronoi(temp_points)
             except Exception as e:
+                print('new Voronoi not feasible:', e)
                 continue
             
             if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
