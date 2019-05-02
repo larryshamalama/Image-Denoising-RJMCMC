@@ -49,13 +49,19 @@ count = 0
 death = 0
 birth = 0
 skip  = 0
+catch = 0
 
 start = time.time()
 
 while len(x_sample) < NUM_ITER:
 
     if count % 100 == 0:
-        print('Done sampling ', count, '\tcurrent k:', k, '\tduration:', np.around(time.time() - start, 2), 's')
+        print('Done sampling ', count) 
+        print('current k:\t', k) 
+        print('duration:\t', np.around(time.time() - start, 2) 's')
+        print('number of skips:\t', skips)
+        print('number of caught errors:\t', catch)
+        print('')
         start = time.time()
 
     points  = random_tessellation_points(k)
@@ -64,6 +70,7 @@ while len(x_sample) < NUM_ITER:
         old_Voronoi = UpdatedVoronoi(points)
     except Exception as e:
         print('old Voronoi not feasible:', e)
+        catch += 1
         continue
         
     if np.abs(sum(old_Voronoi.areas) - 2500) > 1e-7:
@@ -86,8 +93,11 @@ while len(x_sample) < NUM_ITER:
         new_Voronoi = UpdatedVoronoi(temp_points)
     except Exception as e:
         print('new Voronoi not feasible with additional point')
+        catch += 1
+        continue
     
     if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
+        print('Shouldn\'t enter this loop')
         continue
 
 #    J = get_neighbors(new_Voronoi, k) # k is last index of new voronoi, J as defined in Green (1995)
@@ -158,6 +168,7 @@ while len(x_sample) < NUM_ITER:
                 new_Voronoi = UpdatedVoronoi(temp_points)
             except Exception as e:
                 print('new Voronoi not feasible:', e)
+                catch += 1
                 continue
             
             if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
