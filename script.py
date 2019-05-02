@@ -184,5 +184,9 @@ while len(x_sample) < NUM_ITER:
 
     count += 1
 
+print('Number of births:\t', birth)
+print('Number of deaths:\t', death)
+print('Number of skips:\t', skip)
+    
 np.save('x_samples.npy', np.array(x_sample))
 np.save('k_samples.npy', np.array(k_sample))
