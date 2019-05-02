@@ -97,7 +97,7 @@ class UpdatedVoronoi:
             self.vertices  = vertices
             self.regions   = np.array([(0, 0), (0, 50), (50, 0), (50, 50)] + other_candidates)
     
-            self.areas = np.array([PolyArea(self.updated_vertices[i]) for i in range(len(_points))]) # hashable
+            self.areas = np.array([PolyArea(self._vertices[i]) for i in range(len(_points))]) # hashable
             self.x_heights = [] # indices
             
             coordinates = np.array([[(i + 0.5, j + 0.5) for i in range(50)] for j in range(50)])

@@ -129,12 +129,9 @@ while len(x_sample) < NUM_ITER:
     else:
         if np.random.binomial(n=1, p=np.exp(-logR)):
             
-            if k == 4:
+            if k < 1:
                 skip += 1
                 continue
-                
-            elif k < 4:
-                raise ValueError
                 
             death += 1
             
