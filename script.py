@@ -14,6 +14,7 @@ from scipy.spatial import ConvexHull
 
 import itertools
 import random
+import time
 
 from utils import *
 from collections import Counter
@@ -39,24 +40,44 @@ k   = 15
 coordinates = np.array([[(i + 0.5, j + 0.5) for i in range(50)] for j in range(50)])
 coordinates = coordinates.reshape(-1, 2)
 
-NUM_ITER = 20000
-
-points  = random_tessellation_points(k)
-old_Voronoi = UpdatedVoronoi(points)
-
+NUM_ITER = 24000
 x_sample = []
 k_sample = []
 
 count = 0
 death = 0
 birth = 0
+skip  = 0
+catch = 0
+forbidden = 0 # entering forbidden if statement
+
+start = time.time()
+
 while len(x_sample) < NUM_ITER:
 
     if count % 100 == 0:
-        print('Done sampling ', count)
-    
+        print('Done sampling\t\t\t', count, ' samples') 
+        print('current k:\t\t\t', k) 
+        print('duration:\t\t\t', np.around(time.time() - start, 2), 's')
+        print('number of skips:\t\t', skip)
+        print('number of caught errors:\t', catch)
+        print('number of forbidden:\t\t', forbidden)
+        print('')
+        start = time.time()
+
     points  = random_tessellation_points(k)
-    old_Voronoi = UpdatedVoronoi(points)
+    
+    try:
+        old_Voronoi = UpdatedVoronoi(points)
+    except Exception as e:
+        print('old Voronoi not feasible:', e)
+        catch += 1
+        continue
+        
+    if np.abs(sum(old_Voronoi.areas) - 2500) > 1e-7:
+        print('Shouldn\'t enter this loop')
+        forbidden += 1
+        continue
     
     counter = Counter(old_Voronoi.x_heights)
     ni = np.array([counter[r] for r in range(k)])
@@ -64,13 +85,25 @@ while len(x_sample) < NUM_ITER:
     
     heights = np.random.normal(loc=(sum_yi + 0.7**2)/ni, scale=np.sqrt(0.7**2/ni))
     
-    # if any(heights <= 0):
-    #     invalid_heights = np.argwhere(heights <= 0).reshape(-1)
-    #     heights[invalid_heights] = 0.1 # sketchy solution
+#     if any(heights <= 0):
+#         invalid_heights = np.argwhere(heights <= 0).reshape(-1)
+#         heights[invalid_heights] = 0.1 # sketchy solution
 
     new_point   = np.random.uniform(low=0, high=50, size=[1, 2])
+    
     temp_points = np.concatenate((points, new_point.reshape(1, 2)))
-    new_Voronoi = UpdatedVoronoi(temp_points)
+    
+    try:
+        new_Voronoi = UpdatedVoronoi(temp_points)
+    except Exception as e:
+        print('new Voronoi not feasible with additional point')
+        catch += 1
+        continue
+    
+    if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
+        print('Shouldn\'t enter this loop')
+        forbidden += 1
+        continue
 
 #    J = get_neighbors(new_Voronoi, k) # k is last index of new voronoi, J as defined in Green (1995)
     diff_areas = (old_Voronoi.areas - new_Voronoi.areas[:-1])
@@ -79,7 +112,7 @@ while len(x_sample) < NUM_ITER:
 #    assert all(np.argwhere(diff_areas > 1e-7).reshape(-1).astype(np.int32) == np.sort(J))
 
     S, T = diff_areas[J], new_Voronoi.areas[J] # change in areas, new areas
-
+    
     try:
         assert np.abs(sum(S) - new_Voronoi.areas[-1]) < 1e-7 # change in areas same as area of new region
     except:
@@ -116,24 +149,30 @@ while len(x_sample) < NUM_ITER:
             assert len(heights) == max(new_Voronoi.x_heights) + 1 # birth
 
             k = k+1
-            x_sample.append(heights[new_Voronoi.x_heights])
-            k_sample.append(k)
-            
-        else:
-            x_sample.append(heights[old_Voronoi.x_heights])
-            k_sample.append(k)
+            points = temp_points
 
-    else:
+    if logR > 0:
         if np.random.binomial(n=1, p=np.exp(-logR)):
-            death += 1
             
-            heights = heights[:-1] # removing h_star
-            
+            if k <= 3:
+                skip += 1
+                continue
+            death += 1            
 
             delete_tile = random.choice(range(len(points)))
             temp_points = np.delete(points, delete_tile, axis=0)
 
-            new_Voronoi = UpdatedVoronoi(temp_points)
+            try:
+                new_Voronoi = UpdatedVoronoi(temp_points)
+            except Exception as e:
+                print('new Voronoi not feasible:', e)
+                catch += 1
+                continue
+            
+            if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
+                print('Shouldn\'t enter this loop')
+                forbidden += 1
+                continue
 
             #J = get_neighbors(old_Voronoi, delete_tile) # tile no longer exists in new_Voronoi
             
@@ -162,18 +201,18 @@ while len(x_sample) < NUM_ITER:
             new_heights  = heights[J]**(T/(S+T))*(h_star**(S/(S+T)))
             heights[J] = new_heights
             heights = np.delete(heights, delete_tile)
-
-            assert len(heights) == max(new_Voronoi.x_heights) + 1 # death
+            assert len(heights) == max(new_Voronoi.x_heights) + 2 # death
             
-            k = k-1
-            x_sample.append(heights[new_Voronoi.x_heights])
-            k_sample.append(k)
-        
-        else:
-            x_sample.append(heights[old_Voronoi.x_heights])
-            k_sample.append(k)
+            k -= 1
+
+    x_sample.append(heights[old_Voronoi.x_heights])
+    k_sample.append(k)
 
     count += 1
 
+print('Number of births:\t', birth)
+print('Number of deaths:\t', death)
+print('Number of skips:\t', skip)
+    
 np.save('x_samples.npy', np.array(x_sample))
 np.save('k_samples.npy', np.array(k_sample))
