@@ -203,6 +203,7 @@ while len(x_sample) < NUM_ITER:
             heights = np.delete(heights, delete_tile)
             assert len(heights) == max(new_Voronoi.x_heights) + 2 # death
             
+            k -= 1
 
     x_sample.append(heights[old_Voronoi.x_heights])
     k_sample.append(k)
