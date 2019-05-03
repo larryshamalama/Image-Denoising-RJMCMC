@@ -41,7 +41,6 @@ coordinates = np.array([[(i + 0.5, j + 0.5) for i in range(50)] for j in range(5
 coordinates = coordinates.reshape(-1, 2)
 
 NUM_ITER = 24000
-
 x_sample = []
 k_sample = []
 
@@ -56,10 +55,10 @@ start = time.time()
 while len(x_sample) < NUM_ITER:
 
     if count % 100 == 0:
-        print('Done sampling ', count) 
-        print('current k:\t', k) 
-        print('duration:\t', np.around(time.time() - start, 2), 's')
-        print('number of skips:\t', skip)
+        print('Done sampling\t\t\t', count, ' samples') 
+        print('current k:\t\t\t', k) 
+        print('duration:\t\t\t', np.around(time.time() - start, 2), 's')
+        print('number of skips:\t\t', skip)
         print('number of caught errors:\t', catch)
         print('')
         start = time.time()
@@ -74,6 +73,7 @@ while len(x_sample) < NUM_ITER:
         continue
         
     if np.abs(sum(old_Voronoi.areas) - 2500) > 1e-7:
+        print('Shouldn\'t enter this loop')
         continue
     
     counter = Counter(old_Voronoi.x_heights)
@@ -89,6 +89,7 @@ while len(x_sample) < NUM_ITER:
     new_point   = np.random.uniform(low=0, high=50, size=[1, 2])
     
     temp_points = np.concatenate((points, new_point.reshape(1, 2)))
+    
     try:
         new_Voronoi = UpdatedVoronoi(temp_points)
     except Exception as e:
@@ -144,22 +145,15 @@ while len(x_sample) < NUM_ITER:
             assert len(heights) == max(new_Voronoi.x_heights) + 1 # birth
 
             k = k+1
-            x_sample.append(heights[new_Voronoi.x_heights])
-            k_sample.append(k)
-            
-        else:
-            x_sample.append(heights[old_Voronoi.x_heights])
-            k_sample.append(k)
+            points = temp_points
 
-    else:
+    if logR > 0:
         if np.random.binomial(n=1, p=np.exp(-logR)):
             
             if k <= 3:
                 skip += 1
                 continue
-            death += 1
-            heights = heights[:-1] # removing h_star
-            
+            death += 1            
 
             delete_tile = random.choice(range(len(points)))
             temp_points = np.delete(points, delete_tile, axis=0)
@@ -172,6 +166,7 @@ while len(x_sample) < NUM_ITER:
                 continue
             
             if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
+                print('Shouldn\'t enter this loop')
                 continue
 
             #J = get_neighbors(old_Voronoi, delete_tile) # tile no longer exists in new_Voronoi
@@ -201,8 +196,7 @@ while len(x_sample) < NUM_ITER:
             new_heights  = heights[J]**(T/(S+T))*(h_star**(S/(S+T)))
             heights[J] = new_heights
             heights = np.delete(heights, delete_tile)
-
-            assert len(heights) == max(new_Voronoi.x_heights) + 1 # death
+            assert len(heights) == max(new_Voronoi.x_heights) + 2 # death
             
             k = k-1
             x_sample.append(heights[new_Voronoi.x_heights])
