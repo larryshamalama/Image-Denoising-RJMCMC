@@ -49,6 +49,7 @@ death = 0
 birth = 0
 skip  = 0
 catch = 0
+forbidden = 0 # entering forbidden if statement
 
 start = time.time()
 
@@ -60,6 +61,7 @@ while len(x_sample) < NUM_ITER:
         print('duration:\t\t\t', np.around(time.time() - start, 2), 's')
         print('number of skips:\t\t', skip)
         print('number of caught errors:\t', catch)
+        print('number of forbidden:\t\t', forbidden)
         print('')
         start = time.time()
 
@@ -74,6 +76,7 @@ while len(x_sample) < NUM_ITER:
         
     if np.abs(sum(old_Voronoi.areas) - 2500) > 1e-7:
         print('Shouldn\'t enter this loop')
+        forbidden += 1
         continue
     
     counter = Counter(old_Voronoi.x_heights)
@@ -99,6 +102,7 @@ while len(x_sample) < NUM_ITER:
     
     if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
         print('Shouldn\'t enter this loop')
+        forbidden += 1
         continue
 
 #    J = get_neighbors(new_Voronoi, k) # k is last index of new voronoi, J as defined in Green (1995)
@@ -167,6 +171,7 @@ while len(x_sample) < NUM_ITER:
             
             if np.abs(sum(new_Voronoi.areas) - 2500) > 1e-7:
                 print('Shouldn\'t enter this loop')
+                forbidden += 1
                 continue
 
             #J = get_neighbors(old_Voronoi, delete_tile) # tile no longer exists in new_Voronoi
