@@ -83,7 +83,7 @@ while len(x_sample) < NUM_ITER:
     ni = np.array([counter[r] for r in range(k)])
     sum_yi = np.array([sum(noisy_image.reshape(-1)[np.argwhere(np.array(old_Voronoi.x_heights) == r).reshape(-1)]) for r in range(k)])
     
-    heights = np.random.normal(loc=(sum_yi + 0.7**2)/ni, scale=np.sqrt(0.7**2/ni))
+    heights = np.random.normal(loc=(sum_yi - 0.7**2)/ni, scale=np.sqrt(0.7**2/ni))
     
 #     if any(heights <= 0):
 #         invalid_heights = np.argwhere(heights <= 0).reshape(-1)
@@ -214,5 +214,5 @@ print('Number of births:\t', birth)
 print('Number of deaths:\t', death)
 print('Number of skips:\t', skip)
     
-np.save('x_samples.npy', np.array(x_sample))
-np.save('k_samples.npy', np.array(k_sample))
+np.save('x_samples_minus.npy', np.array(x_sample))
+np.save('k_samples_minus.npy', np.array(k_sample))
