@@ -8,13 +8,13 @@ Reversible Jump Markov Chain Monte Carlo (RJMCMC) is an extension of MCMCs which
 
 ### Voronoi Tesselation
 
-Voronoi tesselation (or [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram)) is a partition of a plane in which k generating points define the tesselation. In a 2D setting, all points (u, v) U+2208 U+211D;<sup>2</sup> are associated to one of the k generating points, whichever is closest in U+D543;2 distance. The `voronoi_finite_polygons_2d` in `src/helper.py` is the Python code that defines the tesselation, inspired from `scipy.spatial.Voronoi`.
+Voronoi tesselation (or [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram)) is a partition of a plane in which k generating points define the tesselation. In a 2D setting, all points (u, v) &#2208;  &#211D;<sup>2</sup> are associated to one of the k generating points, whichever is closest in &#543;2 distance. The `voronoi_finite_polygons_2d` in `src/helper.py` is the Python code that defines the tesselation, inspired from `scipy.spatial.Voronoi`.
 
 ![](img/voronoi.png)
 
 ### Image Segmentation
 
-As example of the posterior "denoised" image is provided in the first figure above titled "Deblurred image". The inference procedure is as followed: k points are sampled randomly in a 50 x 50 grid such that a Voronoi tesselation is defined (see image above). A height h;<sup>i</sup> for tile/region i U+2208 {1, ..., k} is given to each tesselation region by sampling from a Normal conditional posterior distribution centered at the mean of pixel-valued grayscale intensities of neighboring tiles. RJMCMC was used to determine the number of tiles between each Gibbs sample iteration whereby an extra tessalation point can be added or removed. As a result, k can take three possible values in any subsequent iteration: k-1, k or k+1.
+As example of the posterior "denoised" image is provided in the first figure above titled "Deblurred image". The inference procedure is as followed: k points are sampled randomly in a 50 x 50 grid such that a Voronoi tesselation is defined (see image above). A height h<sup>i</sup> for tile/region i &#2208; {1, ..., k} is given to each tesselation region by sampling from a Normal conditional posterior distribution centered at the mean of pixel-valued grayscale intensities of neighboring tiles. RJMCMC was used to determine the number of tiles between each Gibbs sample iteration whereby an extra tessalation point can be added or removed. As a result, k can take three possible values in any subsequent iteration: k-1, k or k+1.
 
 ![](img/traceplot.png)
 
