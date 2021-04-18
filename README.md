@@ -8,7 +8,7 @@ Reversible Jump Markov Chain Monte Carlo (RJMCMC) is an extension of MCMCs which
 
 ### Voronoi Tesselation
 
-Voronoi tesselation (or [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram)) is a partition of a plane in which $`k`$ generating points define the tesselation. In a 2D setting, all points $`(u, v) \in \mathbb{R}^2`$ are associated to one of the $`k`$ generating points, whichever is closest in $`L2`$ distance. The `voronoi_finite_polygons_2d` in `src/helper.py` is the Python code that defines the tesselation, inspired from `scipy.spatial.Voronoi`.
+Voronoi tesselation (or [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram)) is a partition of a plane in which $`k`$ generating points define the tesselation. In a 2D setting, all points $`(u, v) \in \mathbb{R}^2`$ are associated to one of the ![k](https://latex.codecogs.com/svg.latex?;k) generating points, whichever is closest in $`L2`$ distance. The `voronoi_finite_polygons_2d` in `src/helper.py` is the Python code that defines the tesselation, inspired from `scipy.spatial.Voronoi`.
 
 ![](img/voronoi.png)
 
